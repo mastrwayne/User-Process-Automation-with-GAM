@@ -4,7 +4,7 @@ import os
 import time
 
 #prompt for username
-user = input("Enter user:")
+user = input("Enter User:")
 
 #remove any whitespace
 user = user.replace(" ","")
