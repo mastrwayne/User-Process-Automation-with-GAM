@@ -1,6 +1,7 @@
 import subprocess
 import os
 import time
+import gam
 
 #User class
 class User:
@@ -9,30 +10,8 @@ class User:
         self.email = email
         self.exists = exists
 
-class GamInfo:
-    def __init__(self,returncode,output):
-        self.returncode = returncode
-        self.output = output
-
-#gam function
-def gam(cmd, showerror=False):
-    gam_location = os.path.expanduser("~/bin/gamadv-xtd3/gam ")
-    print(" > gam "+cmd)
-    print("   waiting on gam...")
-    full_cmd = gam_location + cmd
-    split_cmd = full_cmd.split()
-    result = subprocess.run(split_cmd,capture_output=True, text=True)
-    if result.returncode != 0:
-        if showerror:
-            print("ERROR("+str(result.returncode)+"): ", result.stderr)
-        ginfo = GamInfo(result.returncode,result.stderr)
-    else: 
-        ginfo = GamInfo(result.returncode,result.stdout)
-    
-    return ginfo
-
-#get user function
-def get_user():
+#prompt for user function
+def prompt_user():
     #prompt for username
     print()
     this_id = input("Enter User:")
@@ -47,6 +26,30 @@ def get_user():
 
     return User(this_id,this_email)
 
+#verify user
+def get_user():
+    user = User("","")
+    while user.exists == False:
+        user = prompt_user()
+        time.sleep(.25)
+        print()
+        print("Checking to see if",user.id,"exists...")
+        time.sleep(.25)
+
+        gam_data = gam.run("info user " + user.id)
+
+        if gam_data.returncode == 0:
+            print()
+            print("User",user.email,"exists.")
+            user.exists = True
+            time.sleep(.5)
+        else:
+            print()
+            print("User doesn't exist, please try again")
+            time.sleep(.2)
+        
+    return user
+
 #get key 
 import termios, sys , tty
 def getch():
@@ -58,3 +61,75 @@ def getch():
    finally:
       termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
    return ch
+
+def ask_abort():
+    key = ""
+    print("Abort process? y/n ",end='',flush=True)
+    while key != "y" and key != "n":
+        key = getch()
+    print(key)
+    if key == "y":
+        print("exiting...")
+        exit()
+    print("Continuing on...")
+
+def ask_confirm(message):
+    key = ""
+    print()
+    print(message + " y/n ", end='', flush=True)
+    while key != "y" and key != "n":
+        key = getch()
+    print(key)
+    if key == "y":
+        time.sleep(.5)
+        return True
+    else:
+        print("skipping...")
+        time.sleep(.5)
+        return False
+
+#exit menu
+def exit_menu(user):
+
+    #print menu
+    print()
+    print("--------User Exit Menu--------")
+    print()
+    print(" 1 - Initiate New Exit")
+    print(" 2 - Run Delegation")
+    print(" 3 - Run Transfer")
+    print(" 4 - Run Removal")
+    print(" 5 - Verify & Destroy")
+    print(" 6 - Cleanup")
+    print("")
+    print(" U - Choose New User")
+    print(" X - Quit")
+    print()
+    print("Please choose an option: ",end='',flush=True)
+    key = ""
+
+    #get valid choice
+    while ( 
+        key != "1" and key != "2" and key != "3" and key != "4" 
+        and key != "5" and key != "6" and key !="u" and key != "x" 
+        ):
+        key = getch()
+
+    print(key)
+    time.sleep(.25)
+    if key == "3":
+        print()
+        print("Starting User Transfer Process...")
+        time.sleep(.7)
+        gam.exit_transfer(user)
+    if key == "x":
+        print("exiting...")
+        exit()
+    elif key == "u":
+        user = get_user()
+        exit_menu(user)
+    else: 
+        print("Functionality not yet supported...")
+
+
+    
