@@ -2,13 +2,12 @@
 import functions
 import time
 import subprocess
+import output
 
-subprocess.run(["clear"])
-print("------------------------------------------------------")
-print("          GAM User Process Automation")
-print("------------------------------------------------------")
+user = functions.User("","",False)
 
 ###start program###
+output.header(user)
 
 #get valid user
 user = functions.get_user()
