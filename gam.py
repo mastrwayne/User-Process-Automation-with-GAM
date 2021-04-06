@@ -29,10 +29,21 @@ def run(cmd, showerror=True):
     
     return ginfo
 
+def preview_run(cmd, message, showerror = True):
+    print()
+    print(message)
+    print(" > gam " + cmd)
+    if functions.ask_confirm():
+        ginfo = run(cmd,showerror)
+        return ginfo
+    else: 
+        return GamInfo(0,"")
+    
+
 #show gam error, ask abort
 def show_gam_error(gam_data):
     print("GAM Error Occoured:")
-    print("-----------------------")
+    print("------------------------------")
     print(gam_data.output)
-    print("-----------------------")
+    print("------------------------------")
     functions.ask_abort()

@@ -13,5 +13,5 @@ output.header(user)
 user = functions.get_user()
 
 #valid user established. prompt for commands
-functions.exit_menu(user)
+functions.main_menu(user)
 

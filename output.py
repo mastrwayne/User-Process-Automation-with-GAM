@@ -7,15 +7,37 @@ def header(user):
     subprocess.run(["clear"])
     print("------------------------------------------------------")
     print("          GAM User Process Automation")
-    if user.exists == True:
-        print("              USER:  "+ user.id)
     print("------------------------------------------------------")
+    if user.exists == True:
+        print("USER: " + user.id)
+        print("EMAIL: " + user.email)
     print()
-    
+
+def main_menu():
+    print()
+    print("   ---- Main Menu ----")
+    print()
+    print(" 1 - Create New User      (not implemented)")
+    print(" 2 - Deprovision User ")
+    print(" 3 - Quick Tasks")
+    print("")
+    print(" U - Choose New User")
+    print(" X - Quit")
+    print()  
+
+def quick_menu():
+    print()
+    print("   ---- Quick Tasks Menu ----")
+    print()
+    print(" 1 - Reset Password")
+    print("")
+    print(" U - Choose New User")
+    print(" X - Return to Main Menu")
+    print() 
 
 def exit_menu():
     print()
-    print("---- User Exit Menu ----")
+    print("   ---- User Exit Menu ----")
     print()
     print(" 1 - Initiate New Exit (not implemented)")
     print(" 2 - Run Delegation    (not implemented)")
@@ -25,12 +47,12 @@ def exit_menu():
     print(" 6 - Cleanup           (not implemented)")
     print("")
     print(" U - Choose New User")
-    print(" X - Quit")
+    print(" X - Return to Main Menu")
     print()
 
 def transfer_steps(current_step):
     print()
-    print(" ---- User Transfer ----")
+    print("   ---- User Transfer ----")
     print()
     steps = ["Directory Sharing", "Remove from Groups",  "Remove Recovery Info", "Reset Signin Cookies", "Deprovision User", "Share Calendars", "Share Groups"]
     for step in range(len(steps)):
