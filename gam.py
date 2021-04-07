@@ -37,7 +37,7 @@ def preview_run(cmd, message, showerror = True):
         ginfo = run(cmd,showerror)
         return ginfo
     else: 
-        return GamInfo(0,"")
+        return GamInfo(-1,"")
     
 
 #show gam error, ask abort

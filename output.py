@@ -22,7 +22,7 @@ def main_menu():
     print(" 3 - Quick Tasks")
     print("")
     print(" U - Choose New User")
-    print(" X - Quit")
+    print(" X - Quit Program")
     print()  
 
 def quick_menu():
@@ -39,15 +39,52 @@ def exit_menu():
     print()
     print("   ---- User Exit Menu ----")
     print()
-    print(" 1 - Initiate New Exit (not implemented)")
-    print(" 2 - Run Delegation    (not implemented)")
-    print(" 3 - Run Transfer")
-    print(" 4 - Run Removal       (not implemented)")
-    print(" 5 - Verify & Destroy  (not implemented)")
-    print(" 6 - Cleanup           (not implemented)")
+    print(" 1 - Run Delegation")
+    print(" 2 - Run Transfer")
+    print(" 3 - Run Removal       (not implemented)")
+    print(" 4 - Verify & Destroy  (not implemented)")
+    print(" 5 - Cleanup           (not implemented)")
     print("")
     print(" U - Choose New User")
     print(" X - Return to Main Menu")
+    print()
+
+def show_steps(heading, steps, current_step):
+    print()
+    print("   ---- " + heading + " ----")
+    print()
+    for step in range(len(steps)):
+        this_string = ""
+        if current_step < step:
+            this_string += "    [ ] "
+        elif current_step == step:
+            this_string += " -> [ ] "
+        else:
+            if steps[step].complete:
+                this_string += "    [✓] "
+            else:
+                this_string += "    [X] "
+        this_string += steps[step].name
+        print(this_string)
+    print()
+
+
+def delegation_steps(current_step):
+    print()
+    print("   ---- User Delegation ----")
+    print()
+    steps = ["Change Org Unit", "Remove from Staff Groups",  "Reset Password & 2sv", "Set up Delegation", "Backup Account - Filter", "Backup Account - Initiate Drive Transfer"]
+    
+    for step in range(len(steps)):
+        this_string = ""
+        if current_step < step:
+            this_string += "    [ ] "
+        elif current_step == step:
+            this_string += " -> [ ] "
+        else:
+            this_string += "    [✓] "
+        this_string += steps[step]
+        print(this_string)
     print()
 
 def transfer_steps(current_step):

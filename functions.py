@@ -3,20 +3,31 @@ import os
 import time
 import gam
 import output
+import menus
 
 #User class
 class User:
-    def __init__(self, id, email, exists=False):
+    def __init__(self, id, email, exists=False, delegate = "", backup = ""):
         self.id = id
         self.email = email
         self.exists = exists
+        self.delegate = delegate
+        self.backup = backup
+
+#Step class -- used to store info about a gam command / step in a process
+class Step:
+    def __init__(self, name, command, question):
+        self.name = name
+        self.command = command
+        self.question = question
+        self.complete = False
 
 #prompt for user function
-def prompt_user():
+def prompt_user(prompt = "Enter User: "):
     #prompt for username
     print()
 
-    this_id = input("Enter User:")
+    this_id = input(prompt)
 
     #remove any whitespace
     this_id = this_id.replace(" ","")
@@ -34,23 +45,49 @@ def get_user():
     while user.exists == False:
         user = prompt_user()
         time.sleep(.25)
-        print()
-        print("Checking to see if",user.id,"exists...")
-        time.sleep(.25)
-
-        gam_data = gam.run("info user " + user.id,False)
-
-        if gam_data.returncode == 0:
-            print()
-            print("User",user.email,"exists.")
-            user.exists = True
-            time.sleep(1)
-        else:
-            output.header(user)
-            print("User "+user.id+" doesn't exist, please try again")
-            time.sleep(.2)
+        user = verify_user(user)
         
     return user
+
+def verify_user(user):
+    print()
+    print("Checking to see if",user.id,"exists...")
+    time.sleep(.25)
+
+    gam_data = gam.run("info user " + user.id,False)
+
+    if gam_data.returncode == 0:
+        print()
+        print("User",user.email,"exists.")
+        user.exists = True
+        time.sleep(1)
+    else:
+        output.header(user)
+        print("User "+user.id+" doesn't exist, please try again")
+        time.sleep(.2)
+
+def user_add_delegate(user):
+    if user.delegate = "":
+        delegate = User("","")
+        while delegate.exists == False:
+            delegate = prompt_user("Please enter " + user.id + "'s delegate: ")
+            time.sleep(.25)
+            delegate = verify_user(delegate)
+        
+        user.delegate = delegate.email
+    return user
+
+def user_add_former(user):
+    if user.former == "":
+        former = User("","")
+        while former.exists == False:
+            former = prompt_user("Please enter " + user.id + "'s backup account: ")
+            time.sleep(.25)
+            former = verify_user(former)
+        
+        user.backup = former.email
+    return user
+    
 
 #get key 
 import termios, sys , tty
@@ -92,148 +129,147 @@ def ask_confirm(message=""):
 
 def input_to_continue():
     print()
-    print("Press any key to continue...")
+    print("Press any key to continue...",end='',flush=True)
     time.sleep(.25)
     getch()
 
-#main menu
-def main_menu(user, message=""):
-
-    #print menu
-    output.header(user)
-    if message != "":
-        print(message)
-    output.main_menu()
-    print("Please choose an option: ",end='',flush=True)
-    key = ""
-
-    #get valid choice
-    while ( 
-        key != "1" and key != "2" and key != "3" and key !="u" and key != "x" 
-        ):
-        key = getch()
-
-    print(key)
-    time.sleep(.25)
-    if key == "2":
-        print()
-        print("   Starting Deprovision Process...")
-        time.sleep(1)
-        exit_menu(user)
-    elif key == "3":
-        print()
-        print("   Starting Quick Tasks...")
-        time.sleep(1)
-        quick_menu(user)
-    elif key == "x":
-        print("   Exiting...")
-        time.sleep(.5)
-        exit()
-    elif key == "u":
-        user.exists = False
-        output.header(user)
-        user = get_user()
-        main_menu(user)
-    else: 
-        print("   Functionality not yet supported...")
-        time.sleep(1)
-        main_menu(user)
-
-#quick menu
-def quick_menu(user, message=""):
-
-    #print menu
-    output.header(user)
-    if message != "":
-        print(message)
-    output.quick_menu()
-    print("Please choose an option: ",end='',flush=True)
-    key = ""
-
-    #get valid choice
-    while ( 
-        key != "1" and key !="u" and key != "x" 
-        ):
-        key = getch()
-
-    print(key)
-    time.sleep(.25)
-    if key == "1":
-        command = "update user "+ user.id + " password S@lvation7 changepassword on"
-        gam_data = gam.preview_run(command,"Reset " + user.id + "'s password?")
-        print()
-        if gam_data.output != "":
-            print(gam_data.output)
-            print()
-        input_to_continue()
-        quick_menu(user)
-    elif key == "x":
-        print("   Returning to main Menu...")
-        time.sleep(.5)
-        main_menu(user)
-    elif key == "u":
-        user.exists = False
-        output.header(user)
-        user = get_user()
-        quick_menu(user)
-    else: 
-        print("   Functionality not yet supported...")
-        time.sleep(1)
-        main_menu(user)
-
-#exit menu
-def exit_menu(user, message=""):
-
-    #print menu
-    output.header(user)
-    if message != "":
-        print(message)
-    output.exit_menu()
-    print("Please choose an option: ",end='',flush=True)
-    key = ""
-
-    #get valid choice
-    while ( 
-        key != "1" and key != "2" and key != "3" and key != "4" 
-        and key != "5" and key != "6" and key !="u" and key != "x" 
-        ):
-        key = getch()
-
-    print(key)
-    time.sleep(.25)
-    if key == "3":
-        print()
-        print("   Starting User Transfer Process...")
-        time.sleep(1)
-        exit_transfer(user)
-    elif key == "x":
-        print("   Returning to main menu...")
-        time.sleep(.5)
-        main_menu(user)
-    elif key == "u":
-        user.exists = False
-        output.header(user)
-        user = get_user()
-        exit_menu(user)
-    else: 
-        print("   Functionality not yet supported...")
-        time.sleep(1)
-        exit_menu(user)
-
+#gam exit delegation process
+def exit_delegation(user):
+    heading = "User Delegation"
+    #"Change Org Unit", "Remove from Staff Groups",  "Reset Password", "Turn off 2sv" "Set up Delegation", "Backup Account - Filter", "Backup Account - Initiate Drive Transfer"
+    steps = [
+        Step(
+            "Change Org Unit",
+            "update org \"User Accounts/Exiting Users\" move user "+ user.id,
+            "Move " + user.id + " to Exiting Users group?"
+        ),
+        Step(
+            "Remove from Staff Groups",
+            del_remove_from_staff_groups,
+            "Remove " + user.id + ("from ALL staff groups?\n" +
+            "(gastaff, fulllist, domesticstaff, internationalstaff)")
+        ),
+        Step(
+            "Reset Password",
+            "gam update user " + user.id + " password S@lvation7",
+            "Reset password?"
+        ),
+        Step(
+            "Turn off 2sv",
+            "gam user " + user.id + " turnoff2sv",
+            "Turn off 2-step verification?"
+        ),
+        Step(
+            "Delegate Inbox",
+            "user "  + user.id + " add delegate " + user.delegate,
+            "Delegate " + user.id + "'s inbox to delegate?"
+        ),
+        Step(
+            "Backup Account Setup",
+            "user " + user.backup + " filter to " + user.email + "archive label"  + user.email,
+            "Create backup account filter?"
+        ),
+        Step(
+            "Transfer Drive to Backup Account",
+            "create datatransfer " + user.id + " gdrive "+ user.backup  + " privacy_level shared,private",
+            ""
+        )
+    ]
+    #get user delegate and former
+    if user.delegate == "" and ask_confirm("Notate user delegate?"):
+        user = user_add_delegate(user)
+    if user.backup ==  "" and ask_confirm("Notate user backup account?"):
+        user = user_add_former(user)
+    #run steps
+    run_steps(user,heading,steps)
+    #all steps done.
+    print()
+    print("Transfer Process Complete.")
+    input_to_continue()
+    menus.exit_menu(user)
 
 #gam exit transfer process
 def exit_transfer(user):
-    #step 0 - turn off directory sharing
-    output.header(user)
-    output.transfer_steps(0)
-    time.sleep(.5)
-    gam_data = gam.preview_run("update user "+ user.id + " gal off","Turn off directory sharing?")
-    print(gam_data.output)
-    time.sleep(.5)
-    #step 1 - remove from groups
-    output.header(user)
-    output.transfer_steps(1)
-    time.sleep(.5)
+    #define steps
+    heading = "User Transfer"
+    steps = [
+        Step(
+            "Directory Sharing",
+            "update user "+ user.id + " gal off",
+            "Turn off directory sharing?"
+        ),
+        Step(
+            "Remove from Groups",
+            xfer_remove_from_groups,
+            "Remove " + user.id + " from groups?"
+        ),
+        Step(
+            "Remove Recovery Info",
+            "",
+            ""
+        ),
+        Step(
+            "Reset Signin Cookies",
+            "",
+            ""
+        ),
+        Step(
+            "Deprovision User",
+            "",
+            ""
+        ),
+        Step(
+            "Share Calendars",
+            "",
+            ""
+        ),
+        Step(
+            "Share Groups",
+            "",
+            ""
+        )
+    ]
+    #run steps
+    run_steps(user,heading,steps)
+    #all steps done.
+    print()
+    print("Transfer Process Complete.")
+    input_to_continue()
+    menus.exit_menu(user)
+
+#step unpacking
+def run_steps(user,heading,steps):
+    #loop through all steps
+    for i in range(len(steps)):
+        output.header(user)
+        output.show_steps(heading,steps,i)
+        time.sleep(.5)
+        #single command
+        if type(steps[i].command) == str and steps[i].command != "":
+            gam_data = gam.preview_run(steps[i].command,steps[i].question)
+            print(gam_data.output)
+            if gam_data.returncode == 0:
+                steps[i].complete = True
+        #function to run with multiple commands
+        elif type(steps[i].command) != str:
+            if ask_confirm(steps[i].question):
+                steps[i].complete = steps[i].command(user)
+        #not programmed yet
+        else:
+            print()
+            print("ERROR:  functionality not implemented yet")
+            ask_abort()
+        print()
+        time.sleep(.5)
+        input_to_continue()
+
+
+
+#############################################
+#multi-stage step command functions
+
+
+def xfer_remove_from_groups(user):
     gam_data = gam.preview_run("user " + user.id + " print groups role member", "Get " + user.id + "'s Groups?", False)
     if gam_data.output != "":
         print("Group info:")
@@ -242,40 +278,22 @@ def exit_transfer(user):
     print()
     print("ERROR:  Additional functionality not implemented")
     ask_abort()
-    #step 2 - remove recovery info
-    output.header(user)
-    output.transfer_steps(2)
-    print("ERROR:  Functionality not implemented")
-    time.sleep(.5)
-    ask_abort()
-    #step 3 - reset sign-in cookies
-    output.header(user)
-    output.transfer_steps(3)
-    print("ERROR:  Functionality not implemented")
-    time.sleep(.5)
-    ask_abort()
-    #step 4 - Deprovision User
-    output.header(user)
-    output.transfer_steps(4)
-    print("ERROR:  Functionality not implemented")
-    time.sleep(.5)
-    ask_abort()
-    #step 5 - share calendars
-    output.header(user)
-    output.transfer_steps(5)
-    print("ERROR:  Functionality not implemented")
-    time.sleep(.5)
-    ask_abort()
-    #step 6 - share groups
-    output.header(user)
-    output.transfer_steps(6)
-    print("ERROR:  Functionality not implemented")
-    time.sleep(.5)
-    ask_abort()
-    #complete
-    output.header(user)
-    output.transfer_steps(7)
-    print("Transfer Complete")
-    print("    Returning to main menu...")
-    time.sleep(2)
-    exit_menu(user)
+    return False
+
+def del_remove_from_staff_groups(user):
+    #gastaff
+    gam_data = gam.run("update group gastaff remove user " + user.email,False)
+    print(gam_data.output)
+    #fulllist
+    gam_data = gam.run("update group fulllist remove user " + user.email,False)
+    print(gam_data.output)
+    #domesticstaff
+    gam_data = gam.run("update group domesticstaff remove user " + user.email,False)
+    print(gam_data.output)
+    #internationalstaff
+    gam_data = gam.run("update group internationalstaff remove user " + user.email,False)
+    print(gam_data.output)
+    print()
+    print("Process Complete.")
+    input_to_continue()
+    return True

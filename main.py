@@ -3,6 +3,7 @@ import functions
 import time
 import subprocess
 import output
+import menus
 
 user = functions.User("","",False)
 
@@ -13,5 +14,5 @@ output.header(user)
 user = functions.get_user()
 
 #valid user established. prompt for commands
-functions.main_menu(user)
+menus.main_menu(user)
 
