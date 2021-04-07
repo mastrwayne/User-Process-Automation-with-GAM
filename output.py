@@ -11,14 +11,18 @@ def header(user):
     if user.exists == True:
         print("USER: " + user.id)
         print("EMAIL: " + user.email)
+        if user.delegate != "":
+            print("DELEGATE: " + user.delegate)
+        if user.backup != "":
+            print("BACKUP: " + user.backup)
     print()
 
 def main_menu():
     print()
     print("   ---- Main Menu ----")
     print()
-    print(" 1 - Create New User      (not implemented)")
-    print(" 2 - Deprovision User ")
+    print(" 1 - New User      (not implemented)")
+    print(" 2 - User Exit ")
     print(" 3 - Quick Tasks")
     print("")
     print(" U - Choose New User")

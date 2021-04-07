@@ -111,7 +111,12 @@ def exit_menu(user, message=""):
 
     print(key)
     time.sleep(.25)
-    if key == "2":
+    if key == "1":
+        print()
+        print("   Starting User Delegation Process...")
+        time.sleep(1)
+        functions.exit_delegation(user)
+    elif key == "2":
         print()
         print("   Starting User Transfer Process...")
         time.sleep(1)

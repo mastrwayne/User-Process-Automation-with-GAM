@@ -66,8 +66,10 @@ def verify_user(user):
         print("User "+user.id+" doesn't exist, please try again")
         time.sleep(.2)
 
+    return user
+
 def user_add_delegate(user):
-    if user.delegate = "":
+    if user.delegate == "":
         delegate = User("","")
         while delegate.exists == False:
             delegate = prompt_user("Please enter " + user.id + "'s delegate: ")
@@ -78,7 +80,7 @@ def user_add_delegate(user):
     return user
 
 def user_add_former(user):
-    if user.former == "":
+    if user.backup == "":
         former = User("","")
         while former.exists == False:
             former = prompt_user("Please enter " + user.id + "'s backup account: ")
